@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Прогноз погоды</string>
+    <string name="format12Hour">dd.MM.yyyy</string>
+    <string name="weather_forecast">Прогноз погоды</string>
+    <string name="enter_the_title">Введите название</string>
+    <string name="settlements">Населенные пункты</string>
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="now">&lt;u>Сейчас&lt;/u></string>
+    <string name="on7day">На 7 дней:</string>
+    <string name="title_home">Главная</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_author">Автор</string>
+    <string name="city_selection">Выбор города</string>
+    <string name="author_name">Автор: Иван Иванов</string>
+</resources>
