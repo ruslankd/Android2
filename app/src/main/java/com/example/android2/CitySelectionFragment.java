@@ -53,7 +53,10 @@ public class CitySelectionFragment extends Fragment {
 
         adapter.SetOnItemClickListener((v, position) -> {
             settings.setCurrentIndexOfCity(position);
-            Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(R.id.nav_main);
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.nav_host_fragment, new MainFragment())
+                    .commit();
         });
     }
 

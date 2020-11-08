@@ -15,4 +15,6 @@
     <string name="title_author">Author</string>
     <string name="city_selection">City selection</string>
     <string name="author_name">Author: Ivan Ivanov</string>
+    <string name="navigation_drawer_open">open drawer</string>
+    <string name="navigation_drawer_close">close drawer</string>
 </resources>
