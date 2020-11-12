@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class TemperatureAdapter extends RecyclerView.Adapter<TemperatureAdapter.ViewHolder> {
 
-    private int[] dataSource;
+    private final int[] dataSource;
 
     public TemperatureAdapter(int[] dataSource) {
         this.dataSource = dataSource;
@@ -36,7 +36,7 @@ public class TemperatureAdapter extends RecyclerView.Adapter<TemperatureAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
+        private final TextView textView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

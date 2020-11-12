@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class CityAdapter extends RecyclerView.Adapter<CityAdapter.ViewHolder> {
 
-    private String[] dataSources;
+    private final String[] dataSources;
     private OnItemClickListener itemClickListener;
 
     public CityAdapter(String[] dataSources) {
@@ -43,18 +43,15 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
+        private final TextView textView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.tvCity);
 
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (itemClickListener != null) {
-                        itemClickListener.onItemClick(view, getAdapterPosition());
-                    }
+            textView.setOnClickListener(view -> {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(view, getAdapterPosition());
                 }
             });
         }

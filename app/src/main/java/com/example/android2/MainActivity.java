@@ -1,5 +1,6 @@
 package com.example.android2;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -127,5 +128,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void errorDialog(String message) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Ошибка")
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(
+                        "OK",
+                        (dialogInterface, i) -> {
 
+                        })
+                .create()
+                .show();
+    }
 }

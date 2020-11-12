@@ -8,10 +8,7 @@
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/title_home" />
-        <item
-            android:id="@+id/nav_city_selection"
-            android:icon="@drawable/ic_select"
-            android:title="@string/city_selection" />
+
         <item
             android:id="@+id/nav_author"
             android:icon="@drawable/ic_baseline_perm_contact_calendar_24"
