@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,14 +19,22 @@ public class ThermometerView extends View {
     private int thermometerColor = Color.BLACK;
     private int highColor = Color.RED;
     private int lowColor = Color.BLUE;
-    private float value = 30.0f;
+    private float value = 0.0f;
 
-    private int width = 0;
-    private int height = 0;
+    private float width = 0f;
+    private float height = 0f;
 
-    Rect firstCircle = new Rect();
-    Paint firstCirclePaint;
+    float firstRadius, secondRadius;
+    float centerXForFirstCircle;
+    float centerYForFirstCircle;
+
+    float paddingBetweenCenterAndSecondCircle;
+
+    Paint firstCirclePaint, secondCirclePaint;
     Paint valueLinePaint;
+    Paint thermometerPaint;
+    RectF rectForSecondCircle = new RectF();
+    RectF rectForHead = new RectF();
 
     public ThermometerView(Context context) {
         super(context);
@@ -82,6 +91,8 @@ public class ThermometerView extends View {
                         R.styleable.ThermometerView_value,
                         0.0f
                 );
+        value = checkValue(value);
+
         typedArray.recycle();
     }
 
@@ -90,10 +101,18 @@ public class ThermometerView extends View {
         firstCirclePaint.setColor((value > 0.0f) ? highColor : lowColor);
         firstCirclePaint.setStyle(Paint.Style.FILL);
 
+        secondCirclePaint = new Paint();
+        secondCirclePaint.setColor(thermometerColor);
+        secondCirclePaint.setStyle(Paint.Style.STROKE);
+        secondCirclePaint.setStrokeCap(Paint.Cap.ROUND);
+
         valueLinePaint = new Paint();
         valueLinePaint.setColor((value > 0.0f) ? highColor : lowColor);
-        valueLinePaint.setStyle(Paint.Style.STROKE);
-//        valueLinePaint.setStrokeWidth(10f);
+        valueLinePaint.setStrokeCap(Paint.Cap.ROUND);
+
+        thermometerPaint = new Paint();
+        thermometerPaint.setColor(thermometerColor);
+        thermometerPaint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     @Override
@@ -102,17 +121,115 @@ public class ThermometerView extends View {
 
         width = w - getPaddingStart() - getPaddingEnd();
         height = h - getPaddingTop() - getPaddingBottom();
+
+        centerXForFirstCircle = width / 2.0f;
+        centerYForFirstCircle = 4 * height / 5.0f;
+        firstRadius = width / 8f;
+        paddingBetweenCenterAndSecondCircle = 2.9f * width / 10;
+
+        valueLinePaint.setStrokeWidth(firstRadius);
+        secondCirclePaint.setStrokeWidth(firstRadius / 3);
+
+        rectForSecondCircle.set(
+                centerXForFirstCircle - paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - paddingBetweenCenterAndSecondCircle,
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle + paddingBetweenCenterAndSecondCircle);
+
+        rectForHead.set(
+                centerXForFirstCircle - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - height / 1.6f - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - height / 1.6f + paddingBetweenCenterAndSecondCircle * 0.707f);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawCircle(width / 2, 3 * height / 4, 60, firstCirclePaint);
 
-        Path path = new Path();
-        path.moveTo(width / 2, 3 * height / 4);
-        path.lineTo(width / 2, 3 * height / 4 + 10 * value);
 
-        canvas.drawPath(path, valueLinePaint);
+        canvas.drawCircle(
+                centerXForFirstCircle, centerYForFirstCircle,
+                firstRadius,
+                firstCirclePaint);
+        canvas.drawLine(
+                centerXForFirstCircle, centerYForFirstCircle,
+                centerXForFirstCircle, centerYForFirstCircle - (height / 1.6f * (value + 50) / 100),
+                valueLinePaint);
+        canvas.drawArc(rectForSecondCircle, 315f, 270, false, secondCirclePaint);
+        canvas.drawLine(
+                centerXForFirstCircle - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerXForFirstCircle - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - height / 1.6f,
+                secondCirclePaint);
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 0.707f,
+                centerYForFirstCircle - height / 1.6f,
+                secondCirclePaint);
+
+        canvas.drawArc(rectForHead, 180f, 180f, false, secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.4f,
+                centerYForFirstCircle - (height / 1.6f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.5f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.4f,
+                centerYForFirstCircle - (height / 1.6f * 0.5f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.75f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.3f,
+                centerYForFirstCircle - (height / 1.6f * 0.75f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.25f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.3f,
+                centerYForFirstCircle - (height / 1.6f * 0.25f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.375f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.2f,
+                centerYForFirstCircle - (height / 1.6f * 0.375f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.625f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.2f,
+                centerYForFirstCircle - (height / 1.6f * 0.625f),
+                secondCirclePaint);
+
+        canvas.drawLine(
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle,
+                centerYForFirstCircle - (height / 1.6f * 0.875f),
+                centerXForFirstCircle + paddingBetweenCenterAndSecondCircle * 1.2f,
+                centerYForFirstCircle - (height / 1.6f * 0.875f),
+                secondCirclePaint);
+    }
+
+    public void setValue(float value) {
+        this.value = checkValue(value);
+        invalidate();
+    }
+
+    private float checkValue(float value) {
+        if (value < -50) return  -50;
+        if (value > 50) return 50;
+        return value;
     }
 }

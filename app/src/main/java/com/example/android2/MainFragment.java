@@ -26,6 +26,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     Settings settings;
     MaterialTextView textViewOfCity, tv2;
     RecyclerView rwTemperature;
+    ThermometerView thermometerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +44,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         (view.findViewById(R.id.buttonInfo)).setOnClickListener(this);
 
         tv2 = view.findViewById(R.id.textView2);
+        thermometerView = view.findViewById(R.id.thermo);
     }
 
 
@@ -62,9 +64,9 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         settings = Settings.getInstance();
         textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
-
         try {
             tv2.setText(settings.getTemperature());
+            thermometerView.setValue((float) settings.getTemperature(true));
         } catch (MalformedURLException e) {
             ((MainActivity)getActivity()).errorDialog(e.getMessage());
         }

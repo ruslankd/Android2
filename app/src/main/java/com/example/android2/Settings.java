@@ -73,6 +73,13 @@ public class Settings {
         return (((temp > 0) ? "+" : "") + String.format(Locale.US,"%.2f", temp) + "°");
     }
 
+    public double getTemperature(boolean flag) throws MalformedURLException {
+        calcTemp();
+        double temp = currT - 273.15;
+        return temp;
+    }
+
+
     private void calcTemp() throws MalformedURLException {
 
             final URL uri = new URL("https://api.openweathermap.org/data/2.5/weather?q=" +
