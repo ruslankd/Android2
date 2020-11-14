@@ -24,7 +24,7 @@ public class ThermometerView extends View {
     private float width = 0f;
     private float height = 0f;
 
-    float firstRadius, secondRadius;
+    float firstRadius;
     float centerXForFirstCircle;
     float centerYForFirstCircle;
 
