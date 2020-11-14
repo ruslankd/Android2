@@ -64,14 +64,27 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/frameLayout2">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textView2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="5dp"
-            android:textColor="#FFFFFF"
-            android:textSize="90sp"
-            tools:ignore="RtlSymmetry" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:textColor="#FFFFFF"
+                android:textSize="90sp"
+                tools:ignore="RtlSymmetry" />
+
+            <com.example.android2.ThermometerView
+                android:id="@+id/thermo"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                app:thermometer_color="@android:color/black"
+                app:value="-10"/>
+        </LinearLayout>
     </FrameLayout>
 
     <LinearLayout

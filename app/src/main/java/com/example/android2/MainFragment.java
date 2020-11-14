@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,31 +15,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android2.weather.Main;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
+
+import java.net.MalformedURLException;
 
 public class MainFragment extends Fragment implements View.OnClickListener {
 
     Settings settings;
     MaterialTextView textViewOfCity, tv2;
     RecyclerView rwTemperature;
+    ThermometerView thermometerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_main, container, false);
-
-        textViewOfCity = root.findViewById(R.id.textViewCity);
-
-        (root.findViewById(R.id.button)).setOnClickListener(this);
-        (root.findViewById(R.id.buttonInfo)).setOnClickListener(this);
-
-        tv2 = root.findViewById(R.id.textView2);
-        rwTemperature = root.findViewById(R.id.rwTemperature);
-
-
-        return root;
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        textViewOfCity = view.findViewById(R.id.textViewCity);
+
+        (view.findViewById(R.id.button)).setOnClickListener(this);
+        (view.findViewById(R.id.buttonInfo)).setOnClickListener(this);
+
+        tv2 = view.findViewById(R.id.textView2);
+        thermometerView = view.findViewById(R.id.thermo);
+    }
+
 
     private void initRecyclerView(int[] data) {
         rwTemperature.setHasFixedSize(true);
@@ -55,8 +64,12 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         settings = Settings.getInstance();
         textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
-
-        tv2.setText(settings.getTemperature());
+        try {
+            tv2.setText(settings.getTemperature());
+            thermometerView.setValue((float) settings.getTemperature(true));
+        } catch (MalformedURLException e) {
+            ((MainActivity)getActivity()).errorDialog(e.getMessage());
+        }
 
         //initRecyclerView(settings.getTemperatures()[settings.getCurrentIndexOfCity()]);
 
@@ -68,7 +81,9 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button :
-                Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(R.id.nav_city_selection);
+                CitySelectionFragment citySelectionFragment = new CitySelectionFragment();
+                citySelectionFragment.setDialogCityListener(dialogCityListener);
+                citySelectionFragment.show(getActivity().getSupportFragmentManager(), null);
                 break;
             case R.id.buttonInfo :
                 Snackbar.make(requireView(), "Получить информацию о городе?", Snackbar.LENGTH_LONG)
@@ -85,4 +100,17 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
+    private OnDialogCityListener dialogCityListener = new OnDialogCityListener() {
+        @Override
+        public void onDialogCity() {
+            textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
+
+            try {
+                tv2.setText(settings.getTemperature());
+            } catch (MalformedURLException e) {
+                ((MainActivity)getActivity()).errorDialog(e.getMessage());
+            }
+        }
+    };
 }

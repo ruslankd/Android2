@@ -5,11 +5,19 @@
     android:layout_height="match_parent"
     android:background="#1B1B1B"
     android:orientation="vertical"
+    android:padding="4dp"
     tools:context=".CitySelectionFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/city_select"
+        android:textColor="@android:color/white"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCities"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
 
 </LinearLayout>

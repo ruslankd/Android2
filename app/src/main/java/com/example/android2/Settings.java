@@ -67,14 +67,21 @@ public class Settings {
         this.currentIndexOfCity = currentIndexOfCity;
     }
 
-    public String getTemperature() {
+    public String getTemperature() throws MalformedURLException {
         calcTemp();
         double temp = currT - 273.15;
         return (((temp > 0) ? "+" : "") + String.format(Locale.US,"%.2f", temp) + "°");
     }
 
-    private void calcTemp() {
-        try {
+    public double getTemperature(boolean flag) throws MalformedURLException {
+        calcTemp();
+        double temp = currT - 273.15;
+        return temp;
+    }
+
+
+    private void calcTemp() throws MalformedURLException {
+
             final URL uri = new URL("https://api.openweathermap.org/data/2.5/weather?q=" +
                     cities[getCurrentIndexOfCity()] +
                     ",RU&appid=" + BuildConfig.WEATHER_API_KEY);
@@ -102,10 +109,7 @@ public class Settings {
                     }
                 }
             }).start();
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Fail URI", e);
-            e.printStackTrace();
-        }
+
     }
 
     private String getLines(BufferedReader in) {

@@ -2,10 +2,9 @@ package com.example.android2;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,26 +13,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import java.util.Objects;
 
-public class CitySelectionFragment extends Fragment {
+public class CitySelectionFragment extends BottomSheetDialogFragment {
 
     RecyclerView rvCities;
     Settings settings;
     View root;
 
+    private OnDialogCityListener dialogCityListener;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_city_selection, container, false);
+        return inflater.inflate(R.layout.fragment_city_selection, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         settings = Settings.getInstance();
         String[] data = settings.getCities();
+        root = view;
         initRwCities(data);
-
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(getResources().getString(R.string.city_selection));
-
-        return root;
     }
 
     private void initRwCities(String[] data) {
@@ -53,12 +58,17 @@ public class CitySelectionFragment extends Fragment {
 
         adapter.SetOnItemClickListener((v, position) -> {
             settings.setCurrentIndexOfCity(position);
-            Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(R.id.nav_main);
+            dismiss();
+            if (dialogCityListener != null) dialogCityListener.onDialogCity();
         });
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public void setDialogCityListener(OnDialogCityListener dialogCityListener) {
+        this.dialogCityListener = dialogCityListener;
     }
 }

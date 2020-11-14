@@ -7,21 +7,31 @@
     tools:context=".SettingsFragment">
 
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switch1"
+    <TextView
+        android:id="@+id/tvTheme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/theme"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:paddingStart="5dp"
-        android:text="@string/dark_theme"
+        android:layout_marginBottom="8dp"
         android:textColor="#5E5E5E"
         android:textSize="25sp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry" />
+        app:drawableEndCompat="@drawable/ic_baseline_arrow_forward_ios_24" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#5E5E5E"
+        android:layout_marginTop="4dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTheme"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
