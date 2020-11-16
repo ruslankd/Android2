@@ -14,4 +14,10 @@
     <string name="title_author">Автор</string>
     <string name="city_selection">Выбор города</string>
     <string name="author_name">Автор: Иван Иванов</string>
+    <string name="select_city"><![CDATA[<Выберите город>]]></string>
+    <string name="navigation_drawer_open">Открытие дровера</string>
+    <string name="navigation_drawer_close">Закрытие дровера</string>
+    <string name="theme">Тема</string>
+    <string name="city_select">Выберите город...</string>
+    <string name="select_theme">Выберите тему</string>
 </resources>

@@ -1,25 +1,29 @@
 package com.example.android2;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.android2.weather.Main;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.net.MalformedURLException;
+import java.util.Locale;
 
 public class MainFragment extends Fragment implements View.OnClickListener {
 
@@ -27,6 +31,9 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     MaterialTextView textViewOfCity, tv2;
     RecyclerView rwTemperature;
     ThermometerView thermometerView;
+
+    private boolean isBound = false;
+    private BoundWeatherService.WeatherServiceBinder boundWeatherService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,8 +52,19 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         tv2 = view.findViewById(R.id.textView2);
         thermometerView = view.findViewById(R.id.thermo);
+
+        Intent intent = new Intent(requireActivity(), BoundWeatherService.class);
+        requireActivity().bindService(intent, boundWeatherServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (isBound) {
+            requireActivity().unbindService(boundWeatherServiceConnection);
+        }
+    }
 
     private void initRecyclerView(int[] data) {
         rwTemperature.setHasFixedSize(true);
@@ -62,14 +80,9 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+
         settings = Settings.getInstance();
-        textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
-        try {
-            tv2.setText(settings.getTemperature());
-            thermometerView.setValue((float) settings.getTemperature(true));
-        } catch (MalformedURLException e) {
-            ((MainActivity)getActivity()).errorDialog(e.getMessage());
-        }
+//        textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
 
         //initRecyclerView(settings.getTemperatures()[settings.getCurrentIndexOfCity()]);
 
@@ -83,34 +96,60 @@ public class MainFragment extends Fragment implements View.OnClickListener {
             case R.id.button :
                 CitySelectionFragment citySelectionFragment = new CitySelectionFragment();
                 citySelectionFragment.setDialogCityListener(dialogCityListener);
-                citySelectionFragment.show(getActivity().getSupportFragmentManager(), null);
+                citySelectionFragment.show(requireActivity().getSupportFragmentManager(), null);
                 break;
             case R.id.buttonInfo :
                 Snackbar.make(requireView(), "Получить информацию о городе?", Snackbar.LENGTH_LONG)
-                        .setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String url = "https://en.wikipedia.org/wiki/" + settings.getCities()[settings.getCurrentIndexOfCity()];
-                                Uri uri = Uri.parse(url);
-                                Intent browser = new Intent(Intent.ACTION_VIEW, uri);
-                                startActivity(browser);
-                            }
+                        .setAction("OK", v1 -> {
+                            String url = "https://en.wikipedia.org/wiki/" + settings.getCities()[settings.getCurrentIndexOfCity()];
+                            Uri uri = Uri.parse(url);
+                            Intent browser = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(browser);
                         }).show();
 
                 break;
         }
     }
 
-    private OnDialogCityListener dialogCityListener = new OnDialogCityListener() {
+    private final OnDialogCityListener dialogCityListener = new OnDialogCityListener() {
         @Override
         public void onDialogCity() {
             textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
 
-            try {
-                tv2.setText(settings.getTemperature());
-            } catch (MalformedURLException e) {
-                ((MainActivity)getActivity()).errorDialog(e.getMessage());
-            }
+            tempUpdate();
+        }
+    };
+
+    private void tempUpdate() {
+        if (boundWeatherService == null) {
+            tv2.setText("");
+        } else {
+            final HandlerThread handlerThread = new HandlerThread("HandlerThread");
+            handlerThread.start();
+            final Handler handler = new Handler(handlerThread.getLooper());
+            handler.post(() -> {
+                double temp = boundWeatherService.getCurrDoubleTemp();
+                String tempS = ((temp > 0) ? "+" : "") + String.format(Locale.US,"%.2f", temp) + "°";
+                tv2.post(() -> {
+                    thermometerView.setValue((float) temp);
+                    tv2.setText(tempS);
+                });
+            });
+
+        }
+    }
+
+    private final ServiceConnection boundWeatherServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            boundWeatherService = (BoundWeatherService.WeatherServiceBinder) service;
+            isBound = boundWeatherService != null;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            boundWeatherService = null;
         }
     };
 }
