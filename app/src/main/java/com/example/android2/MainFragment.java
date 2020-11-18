@@ -1,9 +1,6 @@
 package com.example.android2;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,27 +10,36 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.example.android2.weather.WeatherData;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
+import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainFragment extends Fragment implements View.OnClickListener {
+    public static final String LOG = "MyLog";
 
     Settings settings;
+
     MaterialTextView textViewOfCity, tv2;
     RecyclerView rwTemperature;
     ThermometerView thermometerView;
+    ImageView imageWeather;
 
-    private boolean isBound = false;
-    private BoundWeatherService.WeatherServiceBinder boundWeatherService;
+    OpenWeather openWeather;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +52,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
 
         textViewOfCity = view.findViewById(R.id.textViewCity);
+        imageWeather = view.findViewById(R.id.imageWeather);
 
         (view.findViewById(R.id.button)).setOnClickListener(this);
         (view.findViewById(R.id.buttonInfo)).setOnClickListener(this);
@@ -53,17 +60,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         tv2 = view.findViewById(R.id.textView2);
         thermometerView = view.findViewById(R.id.thermo);
 
-        Intent intent = new Intent(requireActivity(), BoundWeatherService.class);
-        requireActivity().bindService(intent, boundWeatherServiceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        if (isBound) {
-            requireActivity().unbindService(boundWeatherServiceConnection);
-        }
+        initRetrofit();
     }
 
     private void initRecyclerView(int[] data) {
@@ -82,12 +79,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         super.onResume();
 
         settings = Settings.getInstance();
-//        textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
+        textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
 
         //initRecyclerView(settings.getTemperatures()[settings.getCurrentIndexOfCity()]);
 
         View v = requireView().getRootView().findViewById(R.id.nav_host_fragment);
         v.setBackgroundResource(settings.isDarkThemeFlag() ? R.drawable.dark : R.drawable.background);
+
+        tempUpdate();
     }
 
     @Override
@@ -106,7 +105,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                             Intent browser = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(browser);
                         }).show();
-
                 break;
         }
     }
@@ -121,35 +119,46 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     };
 
     private void tempUpdate() {
-        if (boundWeatherService == null) {
-            tv2.setText("");
-        } else {
-            final HandlerThread handlerThread = new HandlerThread("HandlerThread");
-            handlerThread.start();
-            final Handler handler = new Handler(handlerThread.getLooper());
-            handler.post(() -> {
-                double temp = boundWeatherService.getCurrDoubleTemp();
-                String tempS = ((temp > 0) ? "+" : "") + String.format(Locale.US,"%.2f", temp) + "°";
-                tv2.post(() -> {
-                    thermometerView.setValue((float) temp);
-                    tv2.setText(tempS);
-                });
-            });
-
-        }
+        String city = settings.getCities()[settings.getCurrentIndexOfCity()];
+        requestRetrofit(city);
     }
 
-    private final ServiceConnection boundWeatherServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            boundWeatherService = (BoundWeatherService.WeatherServiceBinder) service;
-            isBound = boundWeatherService != null;
-        }
+    private void requestRetrofit(String city) {
+        openWeather.loadWeather(city, BuildConfig.WEATHER_API_KEY)
+                .enqueue(new Callback<WeatherData>() {
+                    @Override
+                    public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+                        Log.i(LOG, "onResponse");
+                        if (response.body() != null) {
+                            double currDoubleTemp = response.body().getMain().getTemp() - 273.15f;
+                            String currStringTemp = ((currDoubleTemp > 0) ? "+" : "") +
+                                    String.format(Locale.US, "%.2f", currDoubleTemp) + "°";
+                            tv2.setText(currStringTemp);
+                            thermometerView.setValue((float) currDoubleTemp);
+                            updateImageWeather(response.body());
+                        }
+                    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-            boundWeatherService = null;
-        }
-    };
+                    @Override
+                    public void onFailure(Call<WeatherData> call, Throwable t) {
+                        Log.i(LOG, "onFailure");
+                    }
+                });
+    }
+
+    private void updateImageWeather(WeatherData body) {
+        Picasso.get()
+                .load()
+                .into(imageWeather);
+    }
+
+    private void initRetrofit() {
+        Retrofit retrofit;
+        retrofit = new Retrofit
+                .Builder()
+                .baseUrl("https://api.openweathermap.org/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
 }
