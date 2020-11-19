@@ -1,13 +1,9 @@
 package com.example.android2;
 
-import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.Menu;
-import android.view.View;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -19,7 +15,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -126,19 +121,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-    }
-
-    public void errorDialog(String message) {
-        new AlertDialog.Builder(MainActivity.this)
-                .setTitle("Ошибка")
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton(
-                        "OK",
-                        (dialogInterface, i) -> {
-
-                        })
-                .create()
-                .show();
     }
 }

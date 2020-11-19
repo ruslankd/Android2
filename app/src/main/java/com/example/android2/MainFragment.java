@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android2.weather.WeatherData;
 import com.google.android.material.snackbar.Snackbar;
@@ -38,6 +39,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     RecyclerView rwTemperature;
     ThermometerView thermometerView;
     ImageView imageWeather;
+    TextView tvWeather;
 
     OpenWeather openWeather;
 
@@ -53,6 +55,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         textViewOfCity = view.findViewById(R.id.textViewCity);
         imageWeather = view.findViewById(R.id.imageWeather);
+        tvWeather = view.findViewById(R.id.textView3);
 
         (view.findViewById(R.id.button)).setOnClickListener(this);
         (view.findViewById(R.id.buttonInfo)).setOnClickListener(this);
@@ -148,8 +151,11 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     private void updateImageWeather(WeatherData body) {
         Picasso.get()
-                .load()
+                .load("https://openweathermap.org/img/wn/" +
+                        body.getWeather().get(0).getIcon() +
+                        "@2x.png")
                 .into(imageWeather);
+        tvWeather.setText(body.getWeather().get(0).getDescription());
     }
 
     private void initRetrofit() {
