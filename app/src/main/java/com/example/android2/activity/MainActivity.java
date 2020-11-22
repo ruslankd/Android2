@@ -1,10 +1,15 @@
-package com.example.android2;
+package com.example.android2.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 
+import com.example.android2.fragment.AuthorFragment;
+import com.example.android2.fragment.CitySelectionFragment;
+import com.example.android2.fragment.HistoryFragment;
+import com.example.android2.fragment.MainFragment;
+import com.example.android2.R;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -23,9 +28,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
-    MainFragment mainFragment;
-    CitySelectionFragment citySelectionFragment;
-    AuthorFragment authorFragment;
+
+    private MainFragment mainFragment;
+    private AuthorFragment authorFragment;
+    private HistoryFragment historyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         mainFragment = new MainFragment();
-        citySelectionFragment = new CitySelectionFragment();
         authorFragment = new AuthorFragment();
+        historyFragment = new HistoryFragment();
 
         toolbar = initToolbar();
 
@@ -96,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_main:
                 changeFragment(mainFragment);
                 break;
-            case R.id.nav_city_selection:
-                changeFragment(citySelectionFragment);
+            case R.id.nav_history:
+                changeFragment(historyFragment);
                 break;
             case R.id.nav_author:
                 changeFragment(authorFragment);
@@ -121,5 +127,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    public HistoryFragment getHistoryFragment() {
+        return historyFragment;
     }
 }

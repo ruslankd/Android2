@@ -1,5 +1,7 @@
 package com.example.android2;
 
+import androidx.room.Room;
+
 public class Settings {
     private static Settings instance = null;
 
@@ -9,6 +11,7 @@ public class Settings {
         if (instance == null) {
             instance = new Settings();
         }
+
         return instance;
     }
 

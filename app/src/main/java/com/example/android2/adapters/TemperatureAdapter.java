@@ -1,4 +1,4 @@
-package com.example.android2;
+package com.example.android2.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.android2.R;
 
 public class TemperatureAdapter extends RecyclerView.Adapter<TemperatureAdapter.ViewHolder> {
 

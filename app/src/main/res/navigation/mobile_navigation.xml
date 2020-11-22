@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_main"
-        android:name="com.example.android2.MainFragment"
+        android:name="com.example.android2.fragment.MainFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_main" />
 
     <fragment
-        android:id="@+id/nav_city_selection"
-        android:name="com.example.android2.CitySelectionFragment"
-        android:label="@string/city_selection"
-        tools:layout="@layout/fragment_city_selection" />
+        android:id="@+id/nav_history"
+        android:name="com.example.android2.fragment.HistoryFragment"
+        android:label="@string/history"
+        tools:layout="@layout/fragment_history" />
 
     <fragment
         android:id="@+id/nav_author"
-        android:name="com.example.android2.AuthorFragment"
+        android:name="com.example.android2.fragment.AuthorFragment"
         android:label="@string/title_author"
         tools:layout="@layout/fragment_author" />
 </navigation>
