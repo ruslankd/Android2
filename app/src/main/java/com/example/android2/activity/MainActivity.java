@@ -1,15 +1,23 @@
 package com.example.android2.activity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 
 import com.example.android2.fragment.AuthorFragment;
-import com.example.android2.fragment.CitySelectionFragment;
 import com.example.android2.fragment.HistoryFragment;
 import com.example.android2.fragment.MainFragment;
 import com.example.android2.R;
+import com.example.android2.receiver.BatteryReceiver;
+import com.example.android2.receiver.NetworkReceiver;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AuthorFragment authorFragment;
     private HistoryFragment historyFragment;
 
+    private final BroadcastReceiver batteryReceiver = new BatteryReceiver();
+    private final BroadcastReceiver networkReceiver = new NetworkReceiver();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +64,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            changeFragment(mainFragment);
 //        });
 
+        initNotificationChannel();
+        registerReceiver(networkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(batteryReceiver);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(networkReceiver);
+    }
+
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("2", "name", importance);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     private void initDrawer(Toolbar toolbar) {
         drawer = findViewById(R.id.drawer_layout);
