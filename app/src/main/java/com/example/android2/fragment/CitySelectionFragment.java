@@ -1,5 +1,6 @@
-package com.example.android2;
+package com.example.android2.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android2.OnDialogCityListener;
+import com.example.android2.R;
+import com.example.android2.Settings;
+import com.example.android2.adapters.CityAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.Objects;
@@ -58,6 +63,11 @@ public class CitySelectionFragment extends BottomSheetDialogFragment {
 
         adapter.SetOnItemClickListener((v, position) -> {
             settings.setCurrentIndexOfCity(position);
+            getActivity()
+                    .getPreferences(Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt(MainFragment.INDEX_SELECT_CITY, position)
+                    .apply();
             dismiss();
             if (dialogCityListener != null) dialogCityListener.onDialogCity();
         });

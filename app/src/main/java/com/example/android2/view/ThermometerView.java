@@ -1,24 +1,24 @@
-package com.example.android2;
+package com.example.android2.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import com.example.android2.R;
 
 public class ThermometerView extends View {
 
     private int thermometerColor = Color.BLACK;
     private int highColor = Color.RED;
     private int lowColor = Color.BLUE;
+    private int currColor = Color.BLUE;
     private float value = 0.0f;
 
     private float width = 0f;
@@ -49,12 +49,6 @@ public class ThermometerView extends View {
 
     public ThermometerView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initAttr(context, attrs);
-        init();
-    }
-
-    public ThermometerView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         initAttr(context, attrs);
         init();
     }
@@ -98,7 +92,6 @@ public class ThermometerView extends View {
 
     private void init() {
         firstCirclePaint = new Paint();
-        firstCirclePaint.setColor((value > 0.0f) ? highColor : lowColor);
         firstCirclePaint.setStyle(Paint.Style.FILL);
 
         secondCirclePaint = new Paint();
@@ -107,7 +100,6 @@ public class ThermometerView extends View {
         secondCirclePaint.setStrokeCap(Paint.Cap.ROUND);
 
         valueLinePaint = new Paint();
-        valueLinePaint.setColor((value > 0.0f) ? highColor : lowColor);
         valueLinePaint.setStrokeCap(Paint.Cap.ROUND);
 
         thermometerPaint = new Paint();
@@ -147,6 +139,8 @@ public class ThermometerView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        firstCirclePaint.setColor(currColor);
+        valueLinePaint.setColor(currColor);
 
         canvas.drawCircle(
                 centerXForFirstCircle, centerYForFirstCircle,
@@ -228,6 +222,7 @@ public class ThermometerView extends View {
     }
 
     private float checkValue(float value) {
+        currColor = (value > 0.0f) ? highColor : lowColor;
         if (value < -50) return  -50;
         if (value > 50) return 50;
         return value;

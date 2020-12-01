@@ -1,4 +1,4 @@
-package com.example.android2;
+package com.example.android2.fragment;
 
 import android.os.Bundle;
 
@@ -12,6 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.android2.R;
+import com.example.android2.Settings;
+
 public class SettingsFragment extends Fragment {
 
     Settings settings;
