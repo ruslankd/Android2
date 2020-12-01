@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 
+import com.example.android2.fragment.MapsFragment;
 import com.example.android2.fragment.AuthorFragment;
 import com.example.android2.fragment.HistoryFragment;
 import com.example.android2.fragment.MainFragment;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MainFragment mainFragment;
     private AuthorFragment authorFragment;
     private HistoryFragment historyFragment;
+    private MapsFragment mapsFragment;
 
     private final BroadcastReceiver batteryReceiver = new BatteryReceiver();
     private final BroadcastReceiver networkReceiver = new NetworkReceiver();
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainFragment = new MainFragment();
         authorFragment = new AuthorFragment();
         historyFragment = new HistoryFragment();
+        mapsFragment = new MapsFragment();
 
         toolbar = initToolbar();
 
@@ -147,6 +150,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_author:
                 changeFragment(authorFragment);
+                break;
+            case  R.id.nav_map :
+                changeFragment(mapsFragment);
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);
