@@ -1,6 +1,8 @@
-package com.example.android2;
+package com.example.android2.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +20,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android2.App;
+import com.example.android2.BuildConfig;
+import com.example.android2.History;
+import com.example.android2.HistoryDao;
+import com.example.android2.HistoryDatabase;
+import com.example.android2.OnDialogCityListener;
+import com.example.android2.OpenWeather;
+import com.example.android2.R;
+import com.example.android2.Settings;
+import com.example.android2.activity.MainActivity;
+import com.example.android2.adapters.TemperatureAdapter;
+import com.example.android2.view.ThermometerView;
 import com.example.android2.weather.WeatherData;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -32,8 +50,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainFragment extends Fragment implements View.OnClickListener {
     public static final String LOG = "MyLog";
+    public static final String INDEX_SELECT_CITY = "index_select_city";
 
     Settings settings;
+    String currStringTemp;
 
     MaterialTextView textViewOfCity, tv2;
     RecyclerView rwTemperature;
@@ -42,6 +62,8 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     TextView tvWeather;
 
     OpenWeather openWeather;
+
+    SharedPreferences sp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +85,10 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         tv2 = view.findViewById(R.id.textView2);
         thermometerView = view.findViewById(R.id.thermo);
 
+        sp = getActivity().getPreferences(Context.MODE_PRIVATE);
+        settings = Settings.getInstance();
+        settings.setCurrentIndexOfCity(sp.getInt(INDEX_SELECT_CITY, 0));
+
         initRetrofit();
     }
 
@@ -81,7 +107,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
 
-        settings = Settings.getInstance();
         textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
 
         //initRecyclerView(settings.getTemperatures()[settings.getCurrentIndexOfCity()]);
@@ -118,8 +143,29 @@ public class MainFragment extends Fragment implements View.OnClickListener {
             textViewOfCity.setText(settings.getCities()[settings.getCurrentIndexOfCity()]);
 
             tempUpdate();
+            addToHistory();
         }
     };
+
+    private void addToHistory() {
+
+        History history = new History();
+        history.city = settings.getCities()[settings.getCurrentIndexOfCity()];
+
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.getDefault());
+        history.date = df.format(c);
+        history.temperature = currStringTemp;
+        HistoryDatabase db = Room
+                .databaseBuilder(
+                        getContext(),
+                        HistoryDatabase.class,
+                        "history_database"
+                )
+                .allowMainThreadQueries()
+                .build();
+        db.getHistoryDao().insertHistory(history);
+    }
 
     private void tempUpdate() {
         String city = settings.getCities()[settings.getCurrentIndexOfCity()];
@@ -134,7 +180,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                         Log.i(LOG, "onResponse");
                         if (response.body() != null) {
                             double currDoubleTemp = response.body().getMain().getTemp() - 273.15f;
-                            String currStringTemp = ((currDoubleTemp > 0) ? "+" : "") +
+                            currStringTemp = ((currDoubleTemp > 0) ? "+" : "") +
                                     String.format(Locale.US, "%.2f", currDoubleTemp) + "°";
                             tv2.setText(currStringTemp);
                             thermometerView.setValue((float) currDoubleTemp);

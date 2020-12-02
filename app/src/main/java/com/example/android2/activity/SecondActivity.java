@@ -1,9 +1,12 @@
-package com.example.android2;
+package com.example.android2.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+
+import com.example.android2.R;
+import com.example.android2.fragment.SettingsFragment;
 
 public class SecondActivity extends AppCompatActivity {
 

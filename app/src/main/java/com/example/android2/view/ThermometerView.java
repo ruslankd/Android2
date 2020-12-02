@@ -1,4 +1,4 @@
-package com.example.android2;
+package com.example.android2.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import com.example.android2.R;
 
 public class ThermometerView extends View {
 
