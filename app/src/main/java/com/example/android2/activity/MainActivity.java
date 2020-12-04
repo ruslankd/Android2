@@ -1,17 +1,25 @@
 package com.example.android2.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
 
+import com.example.android2.fragment.MapsFragment;
 import com.example.android2.fragment.AuthorFragment;
 import com.example.android2.fragment.HistoryFragment;
 import com.example.android2.fragment.MainFragment;
@@ -22,6 +30,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -40,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MainFragment mainFragment;
     private AuthorFragment authorFragment;
     private HistoryFragment historyFragment;
+    private MapsFragment mapsFragment;
 
     private final BroadcastReceiver batteryReceiver = new BatteryReceiver();
     private final BroadcastReceiver networkReceiver = new NetworkReceiver();
@@ -52,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainFragment = new MainFragment();
         authorFragment = new AuthorFragment();
         historyFragment = new HistoryFragment();
+        mapsFragment = new MapsFragment();
 
         toolbar = initToolbar();
 
@@ -147,6 +158,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_author:
                 changeFragment(authorFragment);
+                break;
+            case  R.id.nav_map :
+                changeFragment(mapsFragment);
                 break;
         }
         drawer.closeDrawer(GravityCompat.START);

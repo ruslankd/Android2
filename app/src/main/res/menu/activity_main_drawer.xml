@@ -18,5 +18,9 @@
             android:icon="@drawable/ic_baseline_perm_contact_calendar_24"
             android:title="@string/title_author" />
 
+        <item
+            android:id="@+id/nav_map"
+            android:title="@string/map"/>
+
     </group>
 </menu>

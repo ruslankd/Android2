@@ -1,7 +1,5 @@
 package com.example.android2;
 
-import androidx.room.Room;
-
 public class Settings {
     private static Settings instance = null;
 
@@ -33,6 +31,9 @@ public class Settings {
     };
     private int currentIndexOfCity = 0;
 
+    private double latitude = 0f;
+    private double longitude = 0f;
+
     public boolean isDarkThemeFlag() {
         return darkTheme;
     }
@@ -51,5 +52,21 @@ public class Settings {
 
     public void setCurrentIndexOfCity(int currentIndexOfCity) {
         this.currentIndexOfCity = currentIndexOfCity;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
